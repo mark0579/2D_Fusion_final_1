@@ -3534,6 +3534,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Monster 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5315146609269683683, guid: f3b3f14ef5b5f344793902045583fbfd, type: 3}
+      propertyPath: _health
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 5315146609269683683, guid: f3b3f14ef5b5f344793902045583fbfd, type: 3}
+      propertyPath: deathPanel
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8932944063119033499, guid: f3b3f14ef5b5f344793902045583fbfd, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.1
