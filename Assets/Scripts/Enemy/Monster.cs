@@ -1,13 +1,12 @@
 using UnityEngine;
 using Fusion;
 using Fire;
-//using Goldmetal.UndeadSurvivor;
 
 namespace Enemy
 {
     public class Monster : NetworkBehaviour
     {
-        public float health = 100f;
+        [Networked] public float health { get; set; } = 100f;
         private Animator animator;
 
         private void Awake()
@@ -19,24 +18,31 @@ namespace Enemy
         public void TakeDamageRpc(float damage, PlayerRef attacker)
         {
             Debug.Log($"TakeDamageRpc called by {attacker}, damage: {damage}");
-            health -= damage;
-            if (health <= 0)
+            // 상태 권한이 있는 클라이언트에서 체력 감소 처리
+            if (Object.HasStateAuthority)
             {
-                Die();
-            }
-            else
-            {
-                ShowHitEffectRpc();
+                health -= damage;
+                Debug.Log($"Health after damage: {health}");
+                if (health <= 0)
+                {
+                    Die();
+                }
+                else
+                {
+                    ShowHitEffectRpc();
+                }
             }
         }
 
         public void TakeDamage(float damage, PlayerRef attacker)
         {
             Debug.Log($"TakeDamage called by {attacker}, damage: {damage}");
-            if (Object.HasStateAuthority)
+            /*if (Object.HasStateAuthority)
             {
                 TakeDamageRpc(damage, attacker);
-            }
+            }*/
+
+            TakeDamageRpc(damage, attacker);
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -69,11 +75,19 @@ namespace Enemy
                 if (bullet != null)
                 {
                     Debug.Log("Monster was hit by a bullet!");
-                    TakeDamage(bullet.damage, bullet.Object.InputAuthority);
                     if (bullet.Object != null && bullet.Runner != null)
                     {
+                        TakeDamage(bullet.damage, bullet.Object.InputAuthority);
                         Runner.Despawn(bullet.Object);
                     }
+                    else
+                    {
+                        Debug.LogWarning("Bullet's Object or Runner is null.");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Bullet component is missing.");
                 }
             }
         }
